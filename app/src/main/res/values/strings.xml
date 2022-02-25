@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Tic Tac Toe</string>
+    <string-array name="array_choice">
+        <item>Play with Computer</item>
+        <item>Play with Player</item>
+    </string-array>
+    <string name="text">Please select your choice of mode:</string>
+</resources>

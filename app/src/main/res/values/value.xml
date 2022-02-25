@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--For setting the tag for buttons-->
+<resources>
+    <integer name="button1">1</integer>
+    <integer name="button2">2</integer>
+    <integer name="button3">3</integer>
+    <integer name="button4">4</integer>
+    <integer name="button5">5</integer>
+    <integer name="button6">6</integer>
+    <integer name="button7">7</integer>
+    <integer name="button8">8</integer>
+    <integer name="button9">9</integer>
+    <integer name="button10">10</integer>
+    <integer name="button11">11</integer>
+    <integer name="button12">12</integer>
+    <integer name="button13">13</integer>
+    <integer name="button14">14</integer>
+    <integer name="button15">15</integer>
+    <integer name="button16">16</integer>
+    <integer name="button17">17</integer>
+    <integer name="button18">18</integer>
+    <integer name="button19">19</integer>
+    <integer name="button20">20</integer>
+    <integer name="button21">21</integer>
+    <integer name="button22">22</integer>
+    <integer name="button23">23</integer>
+    <integer name="button24">24</integer>
+    <integer name="button25">25</integer>
+</resources>
