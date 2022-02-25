@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private Button generateAgain;
     private int buttonTag;
     private int totalRound = grid * grid;
+    private TextView messageLS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,12 +135,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Checks the orientation of the screen
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            Toast.makeText(this, "Landscape mode" + cells.get(0,0), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Landscape mode", Toast.LENGTH_SHORT).show();
             grid = 5;
+            totalRound = grid * grid;
             //Set the content view to landscape
             setContentView(R.layout.activity_main);
             //Get the text of portrait textview to the landscape textview
-            TextView messageLS = findViewById(R.id.message);
+            messageLS = findViewById(R.id.message);
             messageLS.setText((String)message.getText());
             //Call the function and restore all the button details
             restoreButtonText();
@@ -153,22 +155,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putSerializable("CELLS",cells);
-        savedInstanceState.putInt("PLAYER_TURN",playerTurn);
-        savedInstanceState.putInt("ROUND",round);
-        savedInstanceState.putBoolean("GAME_ENDS",gameEnds);
-        savedInstanceState.putString("MESSAGE",(String)message.getText());
-        restoreButtonText();
-    }
+
+//    @Override
+//    public void onSaveInstanceState(Bundle savedInstanceState) {
+//        super.onSaveInstanceState(savedInstanceState);
+//        savedInstanceState.putSerializable("CELLS",cells);
+//        savedInstanceState.putInt("PLAYER_TURN",playerTurn);
+//        savedInstanceState.putInt("ROUND",round);
+//        savedInstanceState.putBoolean("GAME_ENDS",gameEnds);
+//        savedInstanceState.putString("MESSAGE",(String)message.getText());
+//        restoreButtonText();
+//    }
 
     //When button is clicked execute the game
     public void buttonClicked(View view) {
-
+        Log.i("testTAG", "totalRound in human click: "+totalRound);
         if (!gameEnds) {
             executeGame(view);
+        }
+        else if(gameEnds){
+            Log.i("testTAG", "Game ends");
         }
     }
 
@@ -207,9 +213,19 @@ public class MainActivity extends AppCompatActivity {
         else if(id >= 15){
             int rowIndex = (id - 1) % 5;
             int colIndex = (id - 1) / 5;
-            cells.set(rowIndex, colIndex, playerTurn);
+            checkCell = cells.get(rowIndex, colIndex);
+
+            if(checkCell == 1 || checkCell == 2){
+                Log.i("testTAG", "occupied");
+                playerTurn = checkCell;
+            }
+            else{
+                buttonTags.add(id); //Add the id to arraylist for checking if the button is available
+                cells.set(rowIndex, colIndex, playerTurn);
+            }
         }
 
+        Log.i("testTAG", "" + buttonTags);
         //1, 2, 3, 16,21
         //4, 5, 6, 17,22
         //7, 8, 9, 18,23
@@ -255,11 +271,13 @@ public class MainActivity extends AppCompatActivity {
 //
     private void AIClick(int grid){
 
-        if(grid == 3) {
-
+            Log.i("testTAG", "totalRound in AI click: "+totalRound);
             Button randomBtn = generateButton();
+            int orientation = getResources().getConfiguration().orientation;
 
-            Log.i("testTAG", "" + randomBtn);
+            if(orientation == Configuration.ORIENTATION_LANDSCAPE){
+                message = messageLS;
+            }
 
             //If all playerturn is 2, AI is true and generated button is clickable run this
             if (playerTurn == 2 && AI == true && randomBtn.isEnabled()) {
@@ -277,6 +295,10 @@ public class MainActivity extends AppCompatActivity {
                             randomBtn.setText("" + playerTurn);
                             randomBtn.setEnabled(false);
                             cells.set(rowIndex, colIndex, playerTurn);
+                            playerTurn = 1;
+                            buttonTags.add(id);
+                            Log.i("testTAG", "" + buttonTags);
+                            round++;
                             message.setText("Player 1 turns");
 
                             int winner = checkWinner();
@@ -292,11 +314,6 @@ public class MainActivity extends AppCompatActivity {
                                 message.setText("Draw!");
                                 gameEnds = true;
                             }
-
-
-                            playerTurn = 1;
-                            buttonTags.add(id);
-                            round++;
                         }
                     }, 1000);
                 }
@@ -304,7 +321,34 @@ public class MainActivity extends AppCompatActivity {
                 else if(id >= 15){
                     int rowIndex = (id - 1) % 5;
                     int colIndex = (id - 1) / 5;
-                    cells.set(rowIndex, colIndex, playerTurn);
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            randomBtn.setText("" + playerTurn);
+                            randomBtn.setEnabled(false);
+                            cells.set(rowIndex, colIndex, playerTurn);
+                            playerTurn = 1;
+                            buttonTags.add(id);
+                            Log.i("testTAG", "" + buttonTags);
+                            round++;
+                            message.setText("Player 1 turns");
+
+                            int winner = checkWinner();
+                            if(winner==1){
+                                message.setText("Player 1 wins");
+                                gameEnds = true;
+                            } else if(winner==2){
+                                message.setText("Player 2 wins");
+                                gameEnds = true;
+                            }
+
+                            if(round==totalRound && winner==0){
+                                message.setText("Draw!");
+                                gameEnds = true;
+                            }
+                        }
+                    }, 1000);
                 }
             }
             //If 1 of the condition (playerTurn, AI and button not clickable) is false generate another button
@@ -339,6 +383,44 @@ public class MainActivity extends AppCompatActivity {
                                 generateAgain.setText("" + playerTurn);
                                 generateAgain.setEnabled(false);
                                 cells.set(rowIndex, colIndex, playerTurn);
+                                playerTurn = 1;
+                                buttonTags.add(id);
+                                Log.i("testTAG", "" + buttonTags);
+                                round++;
+                                message.setText("Player 1 turns");
+
+
+                                int winner = checkWinner();
+                                if(winner==1){
+                                    message.setText("Player 1 wins");
+                                    gameEnds = true;
+                                } else if(winner==2){
+                                    message.setText("Player 2 wins");
+                                    gameEnds = true;
+                                }
+
+                                if(round==9 && winner==0){
+                                    message.setText("Draw!");
+                                    gameEnds = true;
+                                }
+                            }
+                        }, 1000);
+                    }
+                    //Handle button15 to button25
+                    else if(id >= 15){
+                        int rowIndex = (id - 1) % 5;
+                        int colIndex = (id - 1) / 5;
+
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                generateAgain.setText("" + playerTurn);
+                                generateAgain.setEnabled(false);
+                                cells.set(rowIndex, colIndex, playerTurn);
+                                playerTurn = 1;
+                                buttonTags.add(id);
+                                Log.i("testTAG", "" + buttonTags);
+                                round++;
                                 message.setText("Player 1 turns");
 
                                 int winner = checkWinner();
@@ -354,40 +436,11 @@ public class MainActivity extends AppCompatActivity {
                                     message.setText("Draw!");
                                     gameEnds = true;
                                 }
-
-                                playerTurn = 1;
-                                buttonTags.add(id);
-                                round++;
                             }
                         }, 1000);
                     }
-                    //Handle button15 to button25
-                    else if(id >= 15){
-                        int rowIndex = (id - 1) % 5;
-                        int colIndex = (id - 1) / 5;
-                        cells.set(rowIndex, colIndex, playerTurn);
-                    }
                 }
             }
-        }
-
-        //        else if (grid == 5){
-//            max = 24;
-//
-//            randomNo = rand.nextInt((max - min) + 1) + min;
-//            randomBtn = buttonArray[rand.nextInt((max - min) + 1) + min];
-//
-//            if(playerTurn == 2 && AI == true){
-//
-//                new Handler().postDelayed(new Runnable() {
-//
-//                    @Override
-//                    public void run() {
-//                        randomBtn.performClick();
-//                        Log.i("testTAG", randomBtn + "clicked");
-//                    }
-//                }, 1000);
-//            }
 //        }
     }
 
@@ -420,13 +473,17 @@ public class MainActivity extends AppCompatActivity {
         buttonArray[24] = findViewById(R.id.button25);
 
         int max;
-
         Random rand = new Random();
         Button randomBtn = null;
 
-
         if(grid == 3){
-            max = 9;
+            max = 8;
+            int randomNo = rand.nextInt(max);
+            randomBtn = buttonArray[randomNo];
+            Log.i("testTAG", randomBtn + " generated");
+        }
+        else if(grid == 5){
+            max = 24;
             int randomNo = rand.nextInt(max);
             randomBtn = buttonArray[randomNo];
             Log.i("testTAG", randomBtn + " generated");
@@ -435,7 +492,6 @@ public class MainActivity extends AppCompatActivity {
         return randomBtn;
     }
 
-    //0 - no winner, 1 - player 1 is the winner, 2 - player 2 is the winner
     private int checkWinner(){
 
         int winner = 0;
