@@ -31,15 +31,21 @@ public class ChoiceActivity extends AppCompatActivity {
         //Create a type ArrayAdapter with type of String with the variable name of adapter
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, listItem);
 
+        //Set the adapter to listView
         listView.setAdapter(adapter);
+
+        //Setup the on item click listener
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                //When item is click get the position of the item in adapter
                 String value = adapter.getItem(position);
                 Toast.makeText(getApplicationContext(), "You have selected " + value, Toast.LENGTH_LONG).show();
 
-                Log.i("valueTAG", value);
+                //Initialize the activity to null
                 Class<? extends Activity> activityToStart = null;
+
+                //Switch statement to handle the item clicked, in this case it's "Play with Computer" or "Play with Player"
                 switch (position){
                     case 0:
                         activityToStart = MainActivity.class;
@@ -49,9 +55,12 @@ public class ChoiceActivity extends AppCompatActivity {
                         break;
                 }
 
-                Intent i = new Intent(getApplicationContext(), activityToStart);
-                i.putExtra("CAPTURE_TEXT",value+"");
-                startActivity(i);
+                //Set the activity to the intent user selected
+                Intent userChoice = new Intent(getApplicationContext(), activityToStart);
+                //put extra for the next activity to get it
+                userChoice.putExtra("CAPTURE_TEXT",value+"");
+                //Start the activity of user choice
+                startActivity(userChoice);
             }
         });
     }

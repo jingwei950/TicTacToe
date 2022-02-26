@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private int buttonTag;
     private int totalRound = grid * grid;
     private TextView messageLS;
+    private int cell;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,68 +62,83 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private String playerSymbol(int cell){
+
+        String text = "";
+
+        if(cell == 1){
+            text = "O";
+        }
+        else if(cell == 2){
+            text = "X";
+        }
+
+        return text;
+    }
+
     //For restoring button text when orientation changes
     private void restoreButtonText(){
+
         Button b1 = findViewById(R.id.button1);
         int vb1 = cells.get(0,0);
         if(vb1!=0) {
-            b1.setText(vb1+"");
+            b1.setText(playerSymbol(vb1));
             b1.setEnabled(false);
         }
 
         Button b2 = findViewById(R.id.button2);
         int vb2 = cells.get(0,1);
         if(vb2!=0) {
-            b2.setText(vb2 + "");
+            b2.setText(playerSymbol(vb2));
             b2.setEnabled(false);
         }
 
         Button b3 = findViewById(R.id.button3);
         int vb3=  cells.get(0,2);
         if(vb3!=0){
-            b3.setText(vb3+"");
+            b3.setText(playerSymbol(vb3));
             b3.setEnabled(false);
         }
 
         Button b4 = findViewById(R.id.button4);
         int vb4 = cells.get(1,0);
         if(vb4!=0){
-            b4.setText(vb4+"");
+            b4.setText(playerSymbol(vb4));
             b4.setEnabled(false);
         }
 
         Button b5 = findViewById(R.id.button5);
         int vb5 =cells.get(1,1);
         if(vb5!=0) {
-            b5.setText(vb5+"");
+            b5.setText(playerSymbol(vb5));
             b5.setEnabled(false);
         }
 
         Button b6 = findViewById(R.id.button6);
         int vb6 = cells.get(1,2);
         if(vb6!=0){
-            b6.setText(vb6+"");
+            b6.setText(playerSymbol(vb6));
             b6.setEnabled(false);
         }
 
         Button b7 = findViewById(R.id.button7);
         int vb7 =  cells.get(2,0);
         if(vb7!=0){
-            b7.setText(vb7+"");
+            b7.setText(playerSymbol(vb7));
             b7.setEnabled(false);
         }
 
         Button b8 = findViewById(R.id.button8);
         int vb8 = cells.get(2,1);
         if(vb8!=0){
-            b8.setText(vb8+"");
+            b8.setText(playerSymbol(vb8));
             b8.setEnabled(false);
         }
 
         Button b9 = findViewById(R.id.button9);
         int vb9 = cells.get(2,2);
         if(vb9!=0){
-            b9.setText(vb9+"");
+            b9.setText(playerSymbol(vb9));
             b9.setEnabled(false);
         }
 
@@ -183,8 +199,7 @@ public class MainActivity extends AppCompatActivity {
         round++;
 
         Button button = (Button) view;
-        button.setText("" + playerTurn);
-        button.setEnabled(false);
+
 
         //Textview for landscape
         TextView message = findViewById(R.id.message);
@@ -193,35 +208,41 @@ public class MainActivity extends AppCompatActivity {
         Log.i("TestTAG", "" + view.getTag());
 
         int id = Integer.parseInt(""+view.getTag());
-        int checkCell;
+
 
         if(id < 15) {
             int rowIndex = (id - 1) / 3;
             int colIndex = (id - 1) % 3;
-            checkCell = cells.get(rowIndex, colIndex);
+            cell = cells.get(rowIndex, colIndex);
 
-            if(checkCell == 1 || checkCell == 2){
+            if(cell == 1 || cell == 2){
                 Log.i("testTAG", "occupied");
-                playerTurn = checkCell;
+                playerTurn = cell;
             }
             else{
                 buttonTags.add(id); //Add the id to arraylist for checking if the button is available
                 cells.set(rowIndex, colIndex, playerTurn);
+                cell = cells.get(rowIndex, colIndex);
+                button.setText(playerSymbol(cell));
+                button.setEnabled(false);
             }
 
         }
         else if(id >= 15){
             int rowIndex = (id - 1) % 5;
             int colIndex = (id - 1) / 5;
-            checkCell = cells.get(rowIndex, colIndex);
+            cell = cells.get(rowIndex, colIndex);
 
-            if(checkCell == 1 || checkCell == 2){
+            if(cell == 1 || cell == 2){
                 Log.i("testTAG", "occupied");
-                playerTurn = checkCell;
+                playerTurn = cell;
             }
             else{
                 buttonTags.add(id); //Add the id to arraylist for checking if the button is available
                 cells.set(rowIndex, colIndex, playerTurn);
+                cell = cells.get(rowIndex, colIndex);
+                button.setText(playerSymbol(cell));
+                button.setEnabled(false);
             }
         }
 
@@ -268,7 +289,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-//
     private void AIClick(int grid){
 
             Log.i("testTAG", "totalRound in AI click: "+totalRound);
@@ -284,17 +304,20 @@ public class MainActivity extends AppCompatActivity {
 
                 int id = Integer.parseInt("" + randomBtn.getTag());
 
+
                 //Handle button1 to button14
                 if(id < 15) {
                     int rowIndex = (id - 1) / 3;
                     int colIndex = (id - 1) % 3;
 
+
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            randomBtn.setText("" + playerTurn);
-                            randomBtn.setEnabled(false);
                             cells.set(rowIndex, colIndex, playerTurn);
+                            cell = cells.get(rowIndex, colIndex);
+                            randomBtn.setText(playerSymbol(cell));
+                            randomBtn.setEnabled(false);
                             playerTurn = 1;
                             buttonTags.add(id);
                             Log.i("testTAG", "" + buttonTags);
@@ -325,9 +348,10 @@ public class MainActivity extends AppCompatActivity {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            randomBtn.setText("" + playerTurn);
-                            randomBtn.setEnabled(false);
                             cells.set(rowIndex, colIndex, playerTurn);
+                            cell = cells.get(rowIndex, colIndex);
+                            randomBtn.setText(playerSymbol(cell));
+                            randomBtn.setEnabled(false);
                             playerTurn = 1;
                             buttonTags.add(id);
                             Log.i("testTAG", "" + buttonTags);
@@ -377,12 +401,14 @@ public class MainActivity extends AppCompatActivity {
                         int rowIndex = (id - 1) / 3;
                         int colIndex = (id - 1) % 3;
 
+
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                generateAgain.setText("" + playerTurn);
-                                generateAgain.setEnabled(false);
                                 cells.set(rowIndex, colIndex, playerTurn);
+                                cell = cells.get(rowIndex, colIndex);
+                                generateAgain.setText(playerSymbol(cell));
+                                generateAgain.setEnabled(false);
                                 playerTurn = 1;
                                 buttonTags.add(id);
                                 Log.i("testTAG", "" + buttonTags);
@@ -410,13 +436,15 @@ public class MainActivity extends AppCompatActivity {
                     else if(id >= 15){
                         int rowIndex = (id - 1) % 5;
                         int colIndex = (id - 1) / 5;
+                        cell = cells.get(rowIndex, colIndex);
 
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                generateAgain.setText("" + playerTurn);
-                                generateAgain.setEnabled(false);
                                 cells.set(rowIndex, colIndex, playerTurn);
+                                cell = cells.get(rowIndex, colIndex);
+                                generateAgain.setText(playerSymbol(cell));
+                                generateAgain.setEnabled(false);
                                 playerTurn = 1;
                                 buttonTags.add(id);
                                 Log.i("testTAG", "" + buttonTags);
@@ -441,7 +469,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-//        }
     }
 
     private Button generateButton(){
