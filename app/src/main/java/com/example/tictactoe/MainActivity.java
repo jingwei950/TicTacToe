@@ -19,18 +19,18 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
 
     private Matrix cells;
-    private int playerTurn;
     private TextView message;
-    private boolean gameEnds;
+    private TextView messageLS;
+    private Button generateAgain;
+    private ArrayList<Integer> buttonTags = new ArrayList<Integer>();
+    private int playerTurn;
     private int round;
     private int grid = 3;
-    private boolean AI = false;
-    private ArrayList<Integer> buttonTags = new ArrayList<Integer>();
-    private Button generateAgain;
     private int buttonTag;
     private int totalRound = grid * grid;
-    private TextView messageLS;
     private int cell;
+    private boolean gameEnds;
+    private boolean AI = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
