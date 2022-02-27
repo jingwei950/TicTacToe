@@ -152,18 +152,21 @@ public class MainActivity extends AppCompatActivity {
         // Checks the orientation of the screen
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             Toast.makeText(this, "Landscape mode", Toast.LENGTH_SHORT).show();
+            //Set the grid to 5x5
             grid = 5;
+            //Total round of 25
             totalRound = grid * grid;
             //Set the content view to landscape
             setContentView(R.layout.activity_main);
-            //Get the text of portrait textview to the landscape textview
+            //Grab the text of portrait textview to the landscape textview
             messageLS = findViewById(R.id.message);
             messageLS.setText((String)message.getText());
-            //Call the function and restore all the button details
+            //Call the function and restore all the button details that is in portrait mode
             restoreButtonText();
 
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
             Toast.makeText(this, "Portrait mode", Toast.LENGTH_SHORT).show();
+            //Set the grid to 3x3
             grid = 3;
             //When orientation from landscape back to portrait, reset the app
             finish();
@@ -171,45 +174,27 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-//    @Override
-//    public void onSaveInstanceState(Bundle savedInstanceState) {
-//        super.onSaveInstanceState(savedInstanceState);
-//        savedInstanceState.putSerializable("CELLS",cells);
-//        savedInstanceState.putInt("PLAYER_TURN",playerTurn);
-//        savedInstanceState.putInt("ROUND",round);
-//        savedInstanceState.putBoolean("GAME_ENDS",gameEnds);
-//        savedInstanceState.putString("MESSAGE",(String)message.getText());
-//        restoreButtonText();
-//    }
-
     //When button is clicked execute the game
     public void buttonClicked(View view) {
-        Log.i("testTAG", "totalRound in human click: "+totalRound);
         if (!gameEnds) {
             executeGame(view);
-        }
-        else if(gameEnds){
-            Log.i("testTAG", "Game ends");
         }
     }
 
     //Run the game
     private void executeGame(View view){
+        //Round + 1 when user clicks on button
         round++;
-
         Button button = (Button) view;
-
 
         //Textview for landscape
         TextView message = findViewById(R.id.message);
         message.getText();
 
-        Log.i("TestTAG", "" + view.getTag());
-
+        //Get the tag of the button that is clicked
         int id = Integer.parseInt(""+view.getTag());
 
-
+        //Handle button1 to button14
         if(id < 15) {
             int rowIndex = (id - 1) / 3;
             int colIndex = (id - 1) % 3;
@@ -220,14 +205,15 @@ public class MainActivity extends AppCompatActivity {
                 playerTurn = cell;
             }
             else{
-                buttonTags.add(id); //Add the id to arraylist for checking if the button is available
-                cells.set(rowIndex, colIndex, playerTurn);
-                cell = cells.get(rowIndex, colIndex);
-                button.setText(playerSymbol(cell));
-                button.setEnabled(false);
+                buttonTags.add(id);                        //Add the id into ArrayList for checking
+                cells.set(rowIndex, colIndex, playerTurn); //Set the cell with player's number
+                cell = cells.get(rowIndex, colIndex);      //Get the cell
+                button.setText(playerSymbol(cell));        //Set the text of button
+                button.setEnabled(false);                  //Disable the button for clicking
             }
 
         }
+        //Handle button15 to button25
         else if(id >= 15){
             int rowIndex = (id - 1) % 5;
             int colIndex = (id - 1) / 5;
@@ -238,27 +224,13 @@ public class MainActivity extends AppCompatActivity {
                 playerTurn = cell;
             }
             else{
-                buttonTags.add(id); //Add the id to arraylist for checking if the button is available
-                cells.set(rowIndex, colIndex, playerTurn);
-                cell = cells.get(rowIndex, colIndex);
-                button.setText(playerSymbol(cell));
-                button.setEnabled(false);
+                buttonTags.add(id);                        //Add the id into ArrayList for checking
+                cells.set(rowIndex, colIndex, playerTurn); //Set the cell with player's number
+                cell = cells.get(rowIndex, colIndex);      //Get the cell
+                button.setText(playerSymbol(cell));        //Set the text of button
+                button.setEnabled(false);                  //Disable the button for clicking
             }
         }
-
-        Log.i("testTAG", "" + buttonTags);
-        //1, 2, 3, 16,21
-        //4, 5, 6, 17,22
-        //7, 8, 9, 18,23
-        //10,11,12,19,24
-        //13,14,15,20,25
-
-        //00,01,02,03,04
-        //10,11,12,13,14
-        //20,21,22,23,24
-        //30,31,32,33,34
-        //40,41,42,43,44
-
 
         int winner = checkWinner();
 
@@ -270,8 +242,6 @@ public class MainActivity extends AppCompatActivity {
             gameEnds = true;
         }
 
-        Log.i("testTAG", ""+totalRound);
-
         if(round==totalRound && winner==0){
             message.setText("Draw!");
             gameEnds = true;
@@ -281,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
             if(playerTurn==1){
                 playerTurn=2;
                 message.setText("Player 2 turns");
-                AIClick(grid);
+                AIClick(grid); //Run this function for AI to auto click
             }else{
                 playerTurn=1;
                 message.setText("Player 1 turns");
@@ -291,38 +261,131 @@ public class MainActivity extends AppCompatActivity {
 
     private void AIClick(int grid){
 
-            Log.i("testTAG", "totalRound in AI click: "+totalRound);
-            Button randomBtn = generateButton();
-            int orientation = getResources().getConfiguration().orientation;
+        //Run the function generateButton() to get a random generated button
+        Button randomBtn = generateButton();
+        //Check for the current orientation
+        int orientation = getResources().getConfiguration().orientation;
 
-            if(orientation == Configuration.ORIENTATION_LANDSCAPE){
-                message = messageLS;
+        //If the current orientation is landscape set the portrait message to landscape message
+        if(orientation == Configuration.ORIENTATION_LANDSCAPE){
+            message = messageLS;
+        }
+
+        //If the conditions is true run this block of code
+        if (playerTurn == 2 && AI == true && randomBtn.isEnabled()) {
+
+            //Get the tag of the random button generated
+            int id = Integer.parseInt("" + randomBtn.getTag());
+
+            //Handle button1 to button14
+            if(id < 15) {
+                //Calculate the row and column with the button id
+                int rowIndex = (id - 1) / 3;
+                int colIndex = (id - 1) % 3;
+
+                //Run a auto click to represent AI with delay of 1s
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        cells.set(rowIndex, colIndex, playerTurn); //Set the cell for AI
+                        cell = cells.get(rowIndex, colIndex);      //Get the cell
+                        randomBtn.setText(playerSymbol(cell));     //Set the text of button
+                        randomBtn.setEnabled(false);               //Disable the button for clicking
+                        playerTurn = 1;                            //Set the turn to 1
+                        buttonTags.add(id);                        //Add the id into ArrayList for checking
+                        round++;                                   //Round + 1 after AI clicks on button
+                        message.setText("Player 1 turns");
+
+                        int winner = checkWinner();
+                        if(winner==1){
+                            message.setText("Player 1 wins");
+                            gameEnds = true;
+                        } else if(winner==2){
+                            message.setText("Player 2 wins");
+                            gameEnds = true;
+                        }
+
+                        if(round==totalRound && winner==0){
+                            message.setText("Draw!");
+                            gameEnds = true;
+                        }
+                    }
+                }, 1000);
+            }
+            //Handle button15 to button25
+            else if(id >= 15){
+                //Calculate the row and column with the button id
+                int rowIndex = (id - 1) % 5;
+                int colIndex = (id - 1) / 5;
+
+                //Run a auto click to represent AI with delay of 1s
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        cells.set(rowIndex, colIndex, playerTurn); //Set the cell for AI
+                        cell = cells.get(rowIndex, colIndex);      //Get the cell
+                        randomBtn.setText(playerSymbol(cell));     //Set the text of button
+                        randomBtn.setEnabled(false);               //Disable the button for clicking
+                        playerTurn = 1;                            //Set the turn to 1
+                        buttonTags.add(id);                        //Add the id into ArrayList for checking
+                        round++;                                   //Round + 1 after AI clicks on button
+                        message.setText("Player 1 turns");
+
+                        int winner = checkWinner();
+                        if(winner==1){
+                            message.setText("Player 1 wins");
+                            gameEnds = true;
+                        } else if(winner==2){
+                            message.setText("Player 2 wins");
+                            gameEnds = true;
+                        }
+
+                        if(round==totalRound && winner==0){
+                            message.setText("Draw!");
+                            gameEnds = true;
+                        }
+                    }
+                }, 1000);
+            }
+        }
+        //If 1 of the condition (playerTurn, AI and button not clickable) is false generate another button
+        else {
+            //Generate random button again
+            generateAgain = generateButton();
+            //Get the tag number of the generated random button
+            buttonTag = Integer.parseInt(""+generateAgain.getTag());
+
+            //Check with the arraylist if the random generated button's tag is in it, if it is, keep generating until the number is not in the list
+            while(buttonTags.contains(buttonTag)) {
+                //Re-setting the variable and buttonTag until the button tag does not contain in the buttonTags arrayList
+                generateAgain = generateButton();
+                buttonTag = Integer.parseInt(""+generateAgain.getTag());
             }
 
-            //If all playerturn is 2, AI is true and generated button is clickable run this
-            if (playerTurn == 2 && AI == true && randomBtn.isEnabled()) {
-
-                int id = Integer.parseInt("" + randomBtn.getTag());
-
+            //When the button tag don't contain in arraylist, playerturn is 2, AI is true and button is available to click, run this function
+            if(!buttonTags.contains(buttonTag) && playerTurn == 2 && AI == true && generateAgain.isEnabled()){
+                //Get the tag of the random button generated
+                int id = Integer.parseInt("" + generateAgain.getTag());
 
                 //Handle button1 to button14
                 if(id < 15) {
+                    //Calculate the row and column with the button id
                     int rowIndex = (id - 1) / 3;
                     int colIndex = (id - 1) % 3;
 
-
+                    //Run a auto click to represent AI with delay of 1s
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            cells.set(rowIndex, colIndex, playerTurn);
-                            cell = cells.get(rowIndex, colIndex);
-                            randomBtn.setText(playerSymbol(cell));
-                            randomBtn.setEnabled(false);
-                            playerTurn = 1;
-                            buttonTags.add(id);
-                            Log.i("testTAG", "" + buttonTags);
-                            round++;
+                            cells.set(rowIndex, colIndex, playerTurn); //Set the cell for AI
+                            cell = cells.get(rowIndex, colIndex);      //Get the cell
+                            generateAgain.setText(playerSymbol(cell)); //Set the text of button
+                            generateAgain.setEnabled(false);           //Disable the button for clicking
+                            playerTurn = 1;                            //Set the turn to 1
+                            buttonTags.add(id);                        //Add the id into ArrayList for checking
+                            round++;                                   //Round + 1 after AI clicks on button
                             message.setText("Player 1 turns");
+
 
                             int winner = checkWinner();
                             if(winner==1){
@@ -333,7 +396,7 @@ public class MainActivity extends AppCompatActivity {
                                 gameEnds = true;
                             }
 
-                            if(round==totalRound && winner==0){
+                            if(round==9 && winner==0){
                                 message.setText("Draw!");
                                 gameEnds = true;
                             }
@@ -342,20 +405,21 @@ public class MainActivity extends AppCompatActivity {
                 }
                 //Handle button15 to button25
                 else if(id >= 15){
+                    //Calculate the row and column with the button id
                     int rowIndex = (id - 1) % 5;
                     int colIndex = (id - 1) / 5;
 
+                    //Run a auto click to represent AI with delay of 1s
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            cells.set(rowIndex, colIndex, playerTurn);
-                            cell = cells.get(rowIndex, colIndex);
-                            randomBtn.setText(playerSymbol(cell));
-                            randomBtn.setEnabled(false);
-                            playerTurn = 1;
-                            buttonTags.add(id);
-                            Log.i("testTAG", "" + buttonTags);
-                            round++;
+                            cells.set(rowIndex, colIndex, playerTurn); //Set the cell for AI
+                            cell = cells.get(rowIndex, colIndex);      //Get the cell
+                            generateAgain.setText(playerSymbol(cell)); //Set the text of button
+                            generateAgain.setEnabled(false);           //Disable the button for clicking
+                            playerTurn = 1;                            //Set the turn to 1
+                            buttonTags.add(id);                        //Add the id into ArrayList for checking
+                            round++;                                   //Round + 1 after AI clicks on button
                             message.setText("Player 1 turns");
 
                             int winner = checkWinner();
@@ -367,7 +431,7 @@ public class MainActivity extends AppCompatActivity {
                                 gameEnds = true;
                             }
 
-                            if(round==totalRound && winner==0){
+                            if(round==9 && winner==0){
                                 message.setText("Draw!");
                                 gameEnds = true;
                             }
@@ -375,147 +439,37 @@ public class MainActivity extends AppCompatActivity {
                     }, 1000);
                 }
             }
-            //If 1 of the condition (playerTurn, AI and button not clickable) is false generate another button
-            else {
-                //Generate random button once
-                generateAgain = generateButton();
-                buttonTag = Integer.parseInt(""+generateAgain.getTag());
-
-                Log.i("testTAG", "TagNo: " + buttonTag);
-
-                //Check with the arraylist if the generated button's tag is in it, if it is, keep generating until is does not contain any
-                while(buttonTags.contains(buttonTag)) {
-                    Log.i("testTAG", "generateAgain while loop triggered");
-                    generateAgain = generateButton();
-                    buttonTag = Integer.parseInt(""+generateAgain.getTag());
-                }
-
-                //When the button tag don't contain in arraylist, playerturn is 2, AI is true and button is available to click, run this function
-                if(!buttonTags.contains(buttonTag) && playerTurn == 2 && AI == true && generateAgain.isEnabled()){
-                    Log.i("testTAG", "generateAgain isEnabled triggered");
-
-                    int id = Integer.parseInt("" + generateAgain.getTag());
-
-                    //Handle button1 to button14
-                    if(id < 15) {
-                        int rowIndex = (id - 1) / 3;
-                        int colIndex = (id - 1) % 3;
-
-
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                cells.set(rowIndex, colIndex, playerTurn);
-                                cell = cells.get(rowIndex, colIndex);
-                                generateAgain.setText(playerSymbol(cell));
-                                generateAgain.setEnabled(false);
-                                playerTurn = 1;
-                                buttonTags.add(id);
-                                Log.i("testTAG", "" + buttonTags);
-                                round++;
-                                message.setText("Player 1 turns");
-
-
-                                int winner = checkWinner();
-                                if(winner==1){
-                                    message.setText("Player 1 wins");
-                                    gameEnds = true;
-                                } else if(winner==2){
-                                    message.setText("Player 2 wins");
-                                    gameEnds = true;
-                                }
-
-                                if(round==9 && winner==0){
-                                    message.setText("Draw!");
-                                    gameEnds = true;
-                                }
-                            }
-                        }, 1000);
-                    }
-                    //Handle button15 to button25
-                    else if(id >= 15){
-                        int rowIndex = (id - 1) % 5;
-                        int colIndex = (id - 1) / 5;
-                        cell = cells.get(rowIndex, colIndex);
-
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                cells.set(rowIndex, colIndex, playerTurn);
-                                cell = cells.get(rowIndex, colIndex);
-                                generateAgain.setText(playerSymbol(cell));
-                                generateAgain.setEnabled(false);
-                                playerTurn = 1;
-                                buttonTags.add(id);
-                                Log.i("testTAG", "" + buttonTags);
-                                round++;
-                                message.setText("Player 1 turns");
-
-                                int winner = checkWinner();
-                                if(winner==1){
-                                    message.setText("Player 1 wins");
-                                    gameEnds = true;
-                                } else if(winner==2){
-                                    message.setText("Player 2 wins");
-                                    gameEnds = true;
-                                }
-
-                                if(round==9 && winner==0){
-                                    message.setText("Draw!");
-                                    gameEnds = true;
-                                }
-                            }
-                        }, 1000);
-                    }
-                }
-            }
+        }
     }
 
     private Button generateButton(){
+        //Create a buttonArray of 25 buttons in it
         Button[] buttonArray = new Button[25];
-        buttonArray[0] = findViewById(R.id.button1);
-        buttonArray[1] = findViewById(R.id.button2);
-        buttonArray[2] = findViewById(R.id.button3);
-        buttonArray[3] = findViewById(R.id.button4);
-        buttonArray[4] = findViewById(R.id.button5);
-        buttonArray[5] = findViewById(R.id.button6);
-        buttonArray[6] = findViewById(R.id.button7);
-        buttonArray[7] = findViewById(R.id.button8);
-        buttonArray[8] = findViewById(R.id.button9);
-        buttonArray[9] = findViewById(R.id.button10);
-        buttonArray[10] = findViewById(R.id.button11);
-        buttonArray[11] = findViewById(R.id.button12);
-        buttonArray[12] = findViewById(R.id.button13);
-        buttonArray[13] = findViewById(R.id.button14);
-        buttonArray[14] = findViewById(R.id.button15);
-        buttonArray[15] = findViewById(R.id.button16);
-        buttonArray[16] = findViewById(R.id.button17);
-        buttonArray[17] = findViewById(R.id.button18);
-        buttonArray[18] = findViewById(R.id.button19);
-        buttonArray[19] = findViewById(R.id.button20);
-        buttonArray[20] = findViewById(R.id.button21);
-        buttonArray[21] = findViewById(R.id.button22);
-        buttonArray[22] = findViewById(R.id.button23);
-        buttonArray[23] = findViewById(R.id.button24);
-        buttonArray[24] = findViewById(R.id.button25);
+
+        //Generate and set the position with 25 different buttons
+        for(int i = 0; i < buttonArray.length; i++) {
+            int id = getResources().getIdentifier("button" + (i+1), "id", getPackageName());
+            buttonArray[i] = (Button) findViewById(id);
+        }
 
         int max;
+        //Random module
         Random rand = new Random();
+        //Random button
         Button randomBtn = null;
 
+        //When the grid is 3 (Portrait mode)
         if(grid == 3){
-            max = 8;
-            int randomNo = rand.nextInt(max);
-            randomBtn = buttonArray[randomNo];
-            Log.i("testTAG", randomBtn + " generated");
+            max = 8; //Set the maximum range of number for random module to 8
+            int randomNo = rand.nextInt(max);  //Randomly generate position 0 to 8 button
+            randomBtn = buttonArray[randomNo]; //Set the random generated position to the button
         }
+        //When grid is 5 (Landscape mode)
         else if(grid == 5){
-            max = 24;
-            int randomNo = rand.nextInt(max);
-            randomBtn = buttonArray[randomNo];
-            Log.i("testTAG", randomBtn + " generated");
+            max = 24; //Set the maximum range of number for random module to 24
+            int randomNo = rand.nextInt(max);  //Randomly generate position 0 to 24 button
+            randomBtn = buttonArray[randomNo]; //Set the random generated position to the button
         }
-
         return randomBtn;
     }
 
